@@ -1,0 +1,27 @@
+{
+  "name": "microfrontend-test",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Enterprise microfrontend starter: Shell + Billing + Claims using React, Vite, Module Federation and MUI",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:shell": "npm run dev -w shell-app",
+    "dev:billing": "npm run dev -w billing-app",
+    "dev:claims": "npm run dev -w claims-app",
+    "build:packages": "npm run build -w @mfe/design-system --if-present",
+    "build:shell": "npm run build -w shell-app",
+    "build:billing": "npm run build -w billing-app",
+    "build:claims": "npm run build -w claims-app",
+    "build": "npm run build:billing && npm run build:claims && npm run build:shell",
+    "preview:billing": "npm run preview -w billing-app",
+    "preview:claims": "npm run preview -w claims-app",
+    "preview:shell": "npm run preview -w shell-app",
+    "dev": "echo \"Remotes must be built+previewed for federation. Run: npm run build:billing && npm run build:claims && npm run preview:billing & npm run preview:claims & npm run dev:shell\""
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
