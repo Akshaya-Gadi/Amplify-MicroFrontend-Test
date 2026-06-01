@@ -2,12 +2,6 @@ name: Deploy Billing
 
 # Independent pipeline: only runs when billing or shared packages change.
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/billing/**'
-      - 'packages/**'
-      - '.github/workflows/billing.yml'
   workflow_dispatch:
 
 concurrency:

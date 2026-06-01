@@ -4,12 +4,6 @@ name: Deploy Shell
 # remotes are loaded at runtime, you usually do NOT need to redeploy the shell
 # when a remote's content changes (only when a remote's URL changes).
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/shell/**'
-      - 'packages/**'
-      - '.github/workflows/shell.yml'
   workflow_dispatch:
 
 concurrency:

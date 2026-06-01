@@ -1,12 +1,6 @@
 name: Deploy Claims
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/claims/**'
-      - 'packages/**'
-      - '.github/workflows/claims.yml'
   workflow_dispatch:
 
 concurrency:
