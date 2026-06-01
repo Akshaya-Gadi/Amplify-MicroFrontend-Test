@@ -1,0 +1,56 @@
+name: Deploy Shell
+
+# The shell is rebuilt on its own changes or shared-package changes. Because
+# remotes are loaded at runtime, you usually do NOT need to redeploy the shell
+# when a remote's content changes (only when a remote's URL changes).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/shell/**'
+      - 'packages/**'
+      - '.github/workflows/shell.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-shell
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AMPLIFY_APP_ID: ${{ secrets.SHELL_AMPLIFY_APP_ID }}
+      BRANCH: main
+      # Remote URLs are baked at build time. Define them as repo/Environment
+      # secrets (or rely on the Amplify Console env vars if Amplify builds).
+      VITE_BILLING_REMOTE_URL: ${{ secrets.VITE_BILLING_REMOTE_URL }}
+      VITE_CLAIMS_REMOTE_URL: ${{ secrets.VITE_CLAIMS_REMOTE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build shell host
+        run: npm run build:shell
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Trigger Amplify deploy
+        run: |
+          aws amplify start-job \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$BRANCH" \
+            --job-type RELEASE

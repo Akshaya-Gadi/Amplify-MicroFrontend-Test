@@ -1,0 +1,22 @@
+version: 1
+applications:
+  - appRoot: apps/shell
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            # Install from the monorepo root so workspaces + shared packages resolve.
+            - cd ../../
+            - npm ci
+        build:
+          commands:
+            # VITE_BILLING_REMOTE_URL / VITE_CLAIMS_REMOTE_URL come from the
+            # Amplify Console environment variables for this app.
+            - npm run build:shell
+      artifacts:
+        baseDirectory: apps/shell/dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*

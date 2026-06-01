@@ -1,0 +1,51 @@
+name: Deploy Billing
+
+# Independent pipeline: only runs when billing or shared packages change.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/billing/**'
+      - 'packages/**'
+      - '.github/workflows/billing.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-billing
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AMPLIFY_APP_ID: ${{ secrets.BILLING_AMPLIFY_APP_ID }}
+      BRANCH: main
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build billing remote
+        run: npm run build:billing
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Trigger Amplify's connected-branch build (Amplify pulls + builds the repo).
+      - name: Trigger Amplify deploy
+        run: |
+          aws amplify start-job \
+            --app-id "$AMPLIFY_APP_ID" \
+            --branch-name "$BRANCH" \
+            --job-type RELEASE

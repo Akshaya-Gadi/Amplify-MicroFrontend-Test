@@ -1,0 +1,25 @@
+version: 1
+applications:
+  - appRoot: apps/billing
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - cd ../../
+            - npm ci
+        build:
+          commands:
+            - npm run build:billing
+      artifacts:
+        baseDirectory: apps/billing/dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*
+      # remoteEntry.js must be fetchable cross-origin by the shell.
+      customHeaders:
+        - pattern: '**/*'
+          headers:
+            - key: 'Access-Control-Allow-Origin'
+              value: '*'

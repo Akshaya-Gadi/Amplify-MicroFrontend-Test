@@ -1,0 +1,269 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Enterprise Microfrontend Architecture using AWS Amplify Apps.
+  Creates:
+    - shell-app
+    - billing-app
+    - claims-app
+
+Parameters:
+
+  RepositoryUrl:
+    Type: String
+    Description: GitHub repository URL
+
+  GitHubAccessToken:
+    Type: String
+    NoEcho: true
+    Description: GitHub Personal Access Token
+
+  BranchName:
+    Type: String
+    Default: main
+    Description: Git branch for deployments
+
+  BillingRemoteUrl:
+    Type: String
+    Default: "apps/billing/dist/assets/remoteEntry.js"
+    Description: Full billing remoteEntry.js URL
+
+  ClaimsRemoteUrl:
+    Type: String
+    Default: "apps/claims/dist/assets/remoteEntry.js"
+    Description: Full claims remoteEntry.js URL
+
+Resources:
+
+  ###########################################################################
+  # BILLING APP
+  ###########################################################################
+
+  BillingAmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: billing-app
+
+      Repository: !Ref RepositoryUrl
+
+      AccessToken: !Ref GitHubAccessToken
+
+      Platform: WEB
+
+      EnvironmentVariables:
+        - Name: AMPLIFY_MONOREPO_APP_ROOT
+          Value: apps/billing
+
+        - Name: AMPLIFY_DIFF_DEPLOY
+          Value: "false"
+
+      BuildSpec: |
+        version: 1
+
+        applications:
+          - appRoot: apps/billing
+
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm ci
+
+                build:
+                  commands:
+                    - npm run build
+
+              artifacts:
+                baseDirectory: dist
+                files:
+                  - '**/*'
+
+              cache:
+                paths:
+                  - node_modules/**/*
+
+      CustomRules:
+        - Source: /<*>
+          Target: /index.html
+          Status: "200"
+
+  BillingBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt BillingAmplifyApp.AppId
+      BranchName: !Ref BranchName
+      Stage: PRODUCTION
+      EnableAutoBuild: true
+
+  ###########################################################################
+  # CLAIMS APP
+  ###########################################################################
+
+  ClaimsAmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: claims-app
+
+      Repository: !Ref RepositoryUrl
+
+      AccessToken: !Ref GitHubAccessToken
+
+      Platform: WEB
+
+      EnvironmentVariables:
+        - Name: AMPLIFY_MONOREPO_APP_ROOT
+          Value: apps/claims
+
+        - Name: AMPLIFY_DIFF_DEPLOY
+          Value: "false"
+
+      BuildSpec: |
+        version: 1
+
+        applications:
+          - appRoot: apps/claims
+
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm ci
+
+                build:
+                  commands:
+                    - npm run build
+
+              artifacts:
+                baseDirectory: dist
+                files:
+                  - '**/*'
+
+              cache:
+                paths:
+                  - node_modules/**/*
+
+      CustomRules:
+        - Source: /<*>
+          Target: /index.html
+          Status: "200"
+
+  ClaimsBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt ClaimsAmplifyApp.AppId
+      BranchName: !Ref BranchName
+      Stage: PRODUCTION
+      EnableAutoBuild: true
+
+  ###########################################################################
+  # SHELL APP
+  ###########################################################################
+
+  ShellAmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: shell-app
+
+      Repository: !Ref RepositoryUrl
+
+      AccessToken: !Ref GitHubAccessToken
+
+      Platform: WEB
+
+      EnvironmentVariables:
+        - Name: AMPLIFY_MONOREPO_APP_ROOT
+          Value: apps/shell
+
+        - Name: AMPLIFY_DIFF_DEPLOY
+          Value: "false"
+
+        - Name: VITE_BILLING_REMOTE_URL
+          Value: !Ref BillingRemoteUrl
+
+        - Name: VITE_CLAIMS_REMOTE_URL
+          Value: !Ref ClaimsRemoteUrl
+
+      BuildSpec: |
+        version: 1
+
+        applications:
+          - appRoot: apps/shell
+
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm ci
+
+                build:
+                  commands:
+                    - npm run build
+
+              artifacts:
+                baseDirectory: dist
+                files:
+                  - '**/*'
+
+              cache:
+                paths:
+                  - node_modules/**/*
+
+      CustomRules:
+        - Source: /<*>
+          Target: /index.html
+          Status: "200"
+
+  ShellBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt ShellAmplifyApp.AppId
+      BranchName: !Ref BranchName
+      Stage: PRODUCTION
+      EnableAutoBuild: true
+
+Outputs:
+
+  ###########################################################################
+  # SHELL OUTPUTS
+  ###########################################################################
+
+  ShellAppId:
+    Value: !GetAtt ShellAmplifyApp.AppId
+    Description: Amplify App ID for shell app
+
+  ShellDefaultUrl:
+    Value: !Sub
+      - "https://${Branch}.${Domain}"
+      - Branch: !Ref BranchName
+        Domain: !GetAtt ShellAmplifyApp.DefaultDomain
+
+    Description: Shell Amplify default URL
+
+  ###########################################################################
+  # BILLING OUTPUTS
+  ###########################################################################
+
+  BillingAppId:
+    Value: !GetAtt BillingAmplifyApp.AppId
+
+  BillingDefaultUrl:
+    Value: !Sub
+      - "https://${Branch}.${Domain}"
+      - Branch: !Ref BranchName
+        Domain: !GetAtt BillingAmplifyApp.DefaultDomain
+
+    Description: Billing Amplify default URL
+
+  ###########################################################################
+  # CLAIMS OUTPUTS
+  ###########################################################################
+
+  ClaimsAppId:
+    Value: !GetAtt ClaimsAmplifyApp.AppId
+
+  ClaimsDefaultUrl:
+    Value: !Sub
+      - "https://${Branch}.${Domain}"
+      - Branch: !Ref BranchName
+        Domain: !GetAtt ClaimsAmplifyApp.DefaultDomain
+
+    Description: Claims Amplify default URL
