@@ -73,7 +73,7 @@ Resources:
                     - npm run build
 
               artifacts:
-                baseDirectory: dist
+                baseDirectory: apps/billing/dist
                 files:
                   - '**/*'
 
@@ -133,7 +133,7 @@ Resources:
                     - npm run build
 
               artifacts:
-                baseDirectory: dist
+                baseDirectory: apps/claims/dist
                 files:
                   - '**/*'
 
@@ -199,7 +199,7 @@ Resources:
                     - npm run build
 
               artifacts:
-                baseDirectory: dist
+                baseDirectory: apps/shell/dist
                 files:
                   - '**/*'
 
