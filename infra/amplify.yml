@@ -24,12 +24,12 @@ Parameters:
 
   BillingRemoteUrl:
     Type: String
-    Default: "apps/billing/dist/assets/remoteEntry.js"
+    Default: ""
     Description: Full billing remoteEntry.js URL
 
   ClaimsRemoteUrl:
     Type: String
-    Default: "apps/claims/dist/assets/remoteEntry.js"
+    Default: ""
     Description: Full claims remoteEntry.js URL
 
 Resources:
@@ -59,27 +59,24 @@ Resources:
       BuildSpec: |
         version: 1
 
-        applications:
-          - appRoot: apps/billing
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm ci
 
-            frontend:
-              phases:
-                preBuild:
-                  commands:
-                    - npm ci
+            build:
+              commands:
+                - npm run build
 
-                build:
-                  commands:
-                    - npm run build
+          artifacts:
+            baseDirectory: dist
+            files:
+              - '**/*'
 
-              artifacts:
-                baseDirectory: apps/billing/dist
-                files:
-                  - '**/*'
-
-              cache:
-                paths:
-                  - node_modules/**/*
+          cache:
+            paths:
+              - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
@@ -92,7 +89,7 @@ Resources:
       AppId: !GetAtt BillingAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: true
+      EnableAutoBuild: false
 
   ###########################################################################
   # CLAIMS APP
@@ -119,27 +116,24 @@ Resources:
       BuildSpec: |
         version: 1
 
-        applications:
-          - appRoot: apps/claims
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm ci
 
-            frontend:
-              phases:
-                preBuild:
-                  commands:
-                    - npm ci
+            build:
+              commands:
+                - npm run build
 
-                build:
-                  commands:
-                    - npm run build
+          artifacts:
+            baseDirectory: dist
+            files:
+              - '**/*'
 
-              artifacts:
-                baseDirectory: apps/claims/dist
-                files:
-                  - '**/*'
-
-              cache:
-                paths:
-                  - node_modules/**/*
+          cache:
+            paths:
+              - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
@@ -152,7 +146,7 @@ Resources:
       AppId: !GetAtt ClaimsAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: true
+      EnableAutoBuild: false
 
   ###########################################################################
   # SHELL APP
@@ -185,27 +179,24 @@ Resources:
       BuildSpec: |
         version: 1
 
-        applications:
-          - appRoot: apps/shell
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm ci
 
-            frontend:
-              phases:
-                preBuild:
-                  commands:
-                    - npm ci
+            build:
+              commands:
+                - npm run build
 
-                build:
-                  commands:
-                    - npm run build
+          artifacts:
+            baseDirectory: dist
+            files:
+              - '**/*'
 
-              artifacts:
-                baseDirectory: apps/shell/dist
-                files:
-                  - '**/*'
-
-              cache:
-                paths:
-                  - node_modules/**/*
+          cache:
+            paths:
+              - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
@@ -218,7 +209,7 @@ Resources:
       AppId: !GetAtt ShellAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: true
+      EnableAutoBuild: false
 
 Outputs:
 
