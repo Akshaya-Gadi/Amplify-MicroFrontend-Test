@@ -75,6 +75,15 @@ Resources:
                   - node_modules/**/*
 
       CustomRules:
+        # Serve static assets (JS chunks, CSS, images) directly
+        - Source: /assets/<*>
+          Target: /assets/<*>
+          Status: "200"
+        # Serve remoteEntry.js directly (module federation entry point)
+        - Source: /remoteEntry.js
+          Target: /remoteEntry.js
+          Status: "200"
+        # Fallback: SPA routing for all other requests
         - Source: /<*>
           Target: /index.html
           Status: "200"
@@ -85,7 +94,7 @@ Resources:
       AppId: !GetAtt BillingAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: false
+      EnableAutoBuild: true
 
   ###########################################################################
   # CLAIMS APP
@@ -116,21 +125,27 @@ Resources:
                 preBuild:
                   commands:
                     - npm ci
-
                 build:
                   commands:
                     - npm run build
-
               artifacts:
                 baseDirectory: dist
                 files:
                   - '**/*'
-
               cache:
                 paths:
                   - node_modules/**/*
 
       CustomRules:
+        # Serve static assets (JS chunks, CSS, images) directly
+        - Source: /assets/<*>
+          Target: /assets/<*>
+          Status: "200"
+        # Serve remoteEntry.js directly (module federation entry point)
+        - Source: /remoteEntry.js
+          Target: /remoteEntry.js
+          Status: "200"
+        # Fallback: SPA routing for all other requests
         - Source: /<*>
           Target: /index.html
           Status: "200"
@@ -141,7 +156,7 @@ Resources:
       AppId: !GetAtt ClaimsAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: false
+      EnableAutoBuild: true
 
   ###########################################################################
   # SHELL APP
@@ -178,21 +193,27 @@ Resources:
                 preBuild:
                   commands:
                     - npm ci
-
                 build:
                   commands:
                     - npm run build
-
               artifacts:
                 baseDirectory: dist
                 files:
                   - '**/*'
-
               cache:
                 paths:
                   - node_modules/**/*
 
       CustomRules:
+        # Serve static assets (JS chunks, CSS, images) directly
+        - Source: /assets/<*>
+          Target: /assets/<*>
+          Status: "200"
+        # Serve remoteEntry.js directly (module federation entry point)
+        - Source: /remoteEntry.js
+          Target: /remoteEntry.js
+          Status: "200"
+        # Fallback: SPA routing for all other requests
         - Source: /<*>
           Target: /index.html
           Status: "200"
@@ -203,7 +224,7 @@ Resources:
       AppId: !GetAtt ShellAmplifyApp.AppId
       BranchName: !Ref BranchName
       Stage: PRODUCTION
-      EnableAutoBuild: false
+      EnableAutoBuild: true
 
 Outputs:
 
@@ -220,7 +241,6 @@ Outputs:
       - "https://${Branch}.${Domain}"
       - Branch: !Ref BranchName
         Domain: !GetAtt ShellAmplifyApp.DefaultDomain
-
     Description: Shell Amplify default URL
 
   ###########################################################################
@@ -235,7 +255,6 @@ Outputs:
       - "https://${Branch}.${Domain}"
       - Branch: !Ref BranchName
         Domain: !GetAtt BillingAmplifyApp.DefaultDomain
-
     Description: Billing Amplify default URL
 
   ###########################################################################
@@ -250,5 +269,4 @@ Outputs:
       - "https://${Branch}.${Domain}"
       - Branch: !Ref BranchName
         Domain: !GetAtt ClaimsAmplifyApp.DefaultDomain
-
     Description: Claims Amplify default URL

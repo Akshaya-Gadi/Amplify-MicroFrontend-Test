@@ -6,6 +6,9 @@ import { dirname, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+console.log('BILLING_REMOTE_URL', process.env.VITE_BILLING_REMOTE_URL);
+console.log('CLAIMS_REMOTE_URL', process.env.VITE_CLAIMS_REMOTE_URL);
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Remote URLs are injected at BUILD time. On Amplify, set these env vars per
