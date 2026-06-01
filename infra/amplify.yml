@@ -173,24 +173,24 @@ Resources:
 
         applications:
           - appRoot: apps/shell
-          frontend:
-            phases:
-              preBuild:
-                commands:
-                  - npm ci
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm ci
 
-              build:
-                commands:
-                  - npm run build
+                build:
+                  commands:
+                    - npm run build
 
-            artifacts:
-              baseDirectory: dist
-              files:
-                - '**/*'
+              artifacts:
+                baseDirectory: dist
+                files:
+                  - '**/*'
 
-            cache:
-              paths:
-                - node_modules/**/*
+              cache:
+                paths:
+                  - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
