@@ -50,33 +50,29 @@ Resources:
       Platform: WEB
 
       EnvironmentVariables:
-        - Name: AMPLIFY_MONOREPO_APP_ROOT
-          Value: apps/billing
-
         - Name: AMPLIFY_DIFF_DEPLOY
           Value: "false"
 
       BuildSpec: |
         version: 1
 
-        frontend:
-          phases:
-            preBuild:
-              commands:
-                - npm ci
-
-            build:
-              commands:
-                - npm run build
-
-          artifacts:
-            baseDirectory: dist
-            files:
-              - '**/*'
-
-          cache:
-            paths:
-              - node_modules/**/*
+        applications:
+          - appRoot: apps/billing
+            frontend:
+              phases:
+                preBuild:
+                  commands:
+                    - npm ci
+                build:
+                  commands:
+                    - npm run build
+              artifacts:
+                baseDirectory: dist
+                files:
+                  - '**/*'
+              cache:
+                paths:
+                  - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
@@ -107,33 +103,32 @@ Resources:
       Platform: WEB
 
       EnvironmentVariables:
-        - Name: AMPLIFY_MONOREPO_APP_ROOT
-          Value: apps/claims
-
         - Name: AMPLIFY_DIFF_DEPLOY
           Value: "false"
 
       BuildSpec: |
         version: 1
 
-        frontend:
-          phases:
-            preBuild:
-              commands:
-                - npm ci
+        applications:
+          - appRoot: apps/claims
+          frontend:
+            phases:
+              preBuild:
+                commands:
+                  - npm ci
 
-            build:
-              commands:
-                - npm run build
+              build:
+                commands:
+                  - npm run build
 
-          artifacts:
-            baseDirectory: dist
-            files:
-              - '**/*'
+            artifacts:
+              baseDirectory: dist
+              files:
+                - '**/*'
 
-          cache:
-            paths:
-              - node_modules/**/*
+            cache:
+              paths:
+                - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
@@ -164,9 +159,6 @@ Resources:
       Platform: WEB
 
       EnvironmentVariables:
-        - Name: AMPLIFY_MONOREPO_APP_ROOT
-          Value: apps/shell
-
         - Name: AMPLIFY_DIFF_DEPLOY
           Value: "false"
 
@@ -179,24 +171,26 @@ Resources:
       BuildSpec: |
         version: 1
 
-        frontend:
-          phases:
-            preBuild:
-              commands:
-                - npm ci
+        applications:
+          - appRoot: apps/shell
+          frontend:
+            phases:
+              preBuild:
+                commands:
+                  - npm ci
 
-            build:
-              commands:
-                - npm run build
+              build:
+                commands:
+                  - npm run build
 
-          artifacts:
-            baseDirectory: dist
-            files:
-              - '**/*'
+            artifacts:
+              baseDirectory: dist
+              files:
+                - '**/*'
 
-          cache:
-            paths:
-              - node_modules/**/*
+            cache:
+              paths:
+                - node_modules/**/*
 
       CustomRules:
         - Source: /<*>
